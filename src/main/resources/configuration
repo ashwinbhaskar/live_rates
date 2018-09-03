@@ -1,0 +1,13 @@
+{
+  "criteria": {
+    "GBP": 0.03,
+    "EUR": 0.1
+  },
+  "currencies": [
+    "GBP",
+    "USD",
+    "EUR",
+    "BTC",
+    "ETH"
+  ]
+}
