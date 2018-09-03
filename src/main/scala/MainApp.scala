@@ -1,11 +1,11 @@
-import java.io.InputStream
-
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
+import controller.Routes
 import module.ApplicationModule
 import scaldi.Injectable._
+
 import scala.concurrent.ExecutionContext
 
 object  MainApp extends App{
@@ -16,7 +16,4 @@ object  MainApp extends App{
   val executionContext = actorSystem.dispatcher
   val routes : Route = new Routes().routes
   Http().bindAndHandle(routes, "localhost",8080)
-
-
-
 }
