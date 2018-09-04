@@ -7,6 +7,6 @@ import scala.concurrent.Future
 
 trait LiveRateClient {
 
-//  def getRate(baseCurrency : Currency) : Future[Map[]]
+  def getRate(baseCurrency : Currency, currencyList : List[Currency]) : Future[Map[String,Double]]
 
 }
