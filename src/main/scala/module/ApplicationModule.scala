@@ -4,6 +4,7 @@ import java.io.InputStream
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
+import client.{HttpClient, HttpClientImpl, LiveRateClient, LiveRateClientImpl}
 import com.redis.RedisClient
 import com.typesafe.config.{Config, ConfigFactory}
 import model.Configuration
@@ -28,4 +29,6 @@ class ApplicationModule extends Module{
   bind[ActorSystem] to ActorSystem("live-rates-actor-system") destroyWith(_.terminate())
   bind[ExecutionContext] to inject[ActorSystem].dispatcher
   bind[ActorMaterializer] to ActorMaterializer()(inject[ActorSystem])
+  bind[HttpClient] to new HttpClientImpl
+  bind[LiveRateClient] to new LiveRateClientImpl
 }
