@@ -14,16 +14,24 @@ class RateFetchServiceImpl(implicit val injector : Injector) extends RateFetchSe
 
   val rediClientWrapper = inject[RedisClientWrapper]
   implicit val ec = inject[ExecutionContext]
+  val currencyConfigService = inject[CurrencyConfigurationService]
   val baseCurrency = inject[Config].getString("configuration.qa.baseCurrency")
 
-  override def fetchRates(currencies: List[Currency]): Future[RatesResponse] = {
 
-    val future = rediClientWrapper.getRates(currencies)
-    future.map(rates => if(rates.isEmpty) throw new NoRatesInSystem(412, "There are no rates in the System")
-    else
+  override def fetchRates(currencies: List[Currency]): Future[RatesResponse] = {
+    validate(currencies).flatMap(_ =>rediClientWrapper.getRates(currencies)
+      .map(rates => if(rates.isEmpty) {
+        throw new NoRatesInSystem(412, "There are no rates available in the System")
+      }
+    else {
       RatesResponse(timeStamp = Calendar.getInstance().getTimeInMillis
-        ,baseCurrency = baseCurrency
-        ,rates = rates)
-    )
+        , baseCurrency = baseCurrency
+        , rates = rates)
+    }
+    ))
+  }
+
+  private def validate(list : List[Currency]) : Future[Unit] = {
+    currencyConfigService.validateCurrencies(list)
   }
 }

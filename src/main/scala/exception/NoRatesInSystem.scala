@@ -1,3 +1,3 @@
 package exception
 
-class NoRatesInSystem(code : Int,msg : String) extends RuntimeError(code,msg)
+class NoRatesInSystem(code : Int,msg : String) extends ServiceError(code,msg)

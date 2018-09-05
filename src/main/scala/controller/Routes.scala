@@ -6,7 +6,9 @@ import scaldi.{Injectable, Injector}
 
 import scala.concurrent.{ExecutionContext, Future}
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
-import exception.RuntimeError
+import akka.http.scaladsl.model.HttpEntity
+import akka.http.scaladsl.model.MediaTypes.`application/json`
+import exception.{NoRatesInSystem, ServiceError}
 import service.RateFetchService
 
 import scala.util.{Failure, Success}
@@ -21,10 +23,11 @@ class Routes(implicit val injector: Injector) extends Injectable {
     get {
       parameters('currencies ? "") { (currencies) =>
 
-        val liveRates: Future[RatesResponse] = rateFetchService.fetchRates(currencies = if(currencies.isEmpty) configuration.currencies else currencies.split(",").toList)
+        val sanitizedCurrencies = if(currencies.isEmpty) configuration.currencies else currencies.split(",").map(_.toUpperCase).toList
+        val liveRates: Future[RatesResponse] = rateFetchService.fetchRates(currencies = sanitizedCurrencies)
         onComplete(liveRates) {
           case  Success(liveRates : RatesResponse) => complete(liveRates)
-          case  Failure(ex : RuntimeError) => complete(ex)
+          case  Failure(error : ServiceError) =>  complete(error.errorCode, HttpEntity(`application/json`, error.toJsonString))
         }
 
       }

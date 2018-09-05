@@ -5,11 +5,10 @@ import java.io.InputStream
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import client.{HttpClient, HttpClientImpl, LiveRateClient, LiveRateClientImpl}
-
 import com.typesafe.config.{Config, ConfigFactory}
 import model.Configuration
 import scaldi.Module
-import service.{RateFetchService, RateFetchServiceImpl, RateUpdateService}
+import service.{CurrencyConfigurationService, RateFetchService, RateFetchServiceImpl, RateUpdateService}
 import spray.json.JsonParser
 import wrapper.RedisClientWrapper
 
@@ -30,4 +29,5 @@ class ApplicationModule extends Module{
   bind[LiveRateClient] to new LiveRateClientImpl
   bind[RateFetchService] to new RateFetchServiceImpl
   bind[RateUpdateService] to new RateUpdateService
+  bind[CurrencyConfigurationService] to new CurrencyConfigurationService
 }
