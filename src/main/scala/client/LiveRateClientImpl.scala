@@ -1,6 +1,6 @@
 package client
 
-import Alias.Currency
+import Alias.{Currency, Rates}
 import akka.actor.{ActorRefFactory, ActorSystem}
 import akka.http.scaladsl.model.Uri.Query
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, RequestEntity, Uri}
@@ -20,9 +20,9 @@ class LiveRateClientImpl(implicit inj : Injector) extends LiveRateClient with In
   implicit val ec = inject[ExecutionContext]
   implicit val actorRef = inject[ActorRefFactory]
 
-  override def getRate(baseCurrency: Currency, currencyList: List[Currency]): Future[Map[String, Double]] = {
+  override def getRate(baseCurrency: Currency, currencyList: List[Currency]): Future[Rates] = {
     val liveRatesUri = Uri(liveRatesUrl).withQuery(Query((BASE_CURRENCY_KEY,baseCurrency),(TO_CURRENCY_KEY,currencyList.mkString(","))))
     val httpRequest = HttpRequest(method = HttpMethods.GET,uri = liveRatesUri)
-    httpClient.execute[Map[String,Double]](httpRequest)(CustomHttpResponseUnmarshaller.httpResponseUnmarshaller)
+    httpClient.execute[Rates](httpRequest)(CustomHttpResponseUnmarshaller.httpResponseUnmarshaller)
   }
 }

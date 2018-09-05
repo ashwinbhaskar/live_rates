@@ -1,5 +1,6 @@
 package unmarshaller
 
+import Alias.Rates
 import akka.http.scaladsl.model.HttpResponse
 import akka.http.scaladsl.unmarshalling.{FromResponseUnmarshaller, Unmarshal, Unmarshaller}
 import akka.util.ByteString
@@ -9,7 +10,7 @@ import scala.concurrent.ExecutionContext
 
 object CustomHttpResponseUnmarshaller {
 
-  implicit def httpResponseUnmarshaller(implicit ec: ExecutionContext): FromResponseUnmarshaller[Map[String,Double]] = {
+  implicit def httpResponseUnmarshaller(implicit ec: ExecutionContext): FromResponseUnmarshaller[Rates] = {
     Unmarshaller.withMaterializer(_ => implicit mat => {
       case resp: HttpResponse if resp.status.isSuccess() =>
         resp.entity.dataBytes.runFold(ByteString.empty)(_ ++ _).map(_.utf8String).map{
