@@ -9,18 +9,17 @@ import scaldi.{Injectable, Injector}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CriteriaExceedLogger(implicit val inj : Injector) extends Injectable{
+class CriteriaExceedReporterToFile(loggingFile : File)(implicit val inj : Injector) extends CriteriaExceedReporter with Injectable{
 
-  val logFile = inject[File] (identified by "criteriaExceedLogFile")
   val logger = LoggerFactory.getLogger(this.getClass)
   implicit val ec = inject[ExecutionContext]
 
-  def logAsync(baseCurrency : Currency, currency: Currency, delta : Double) : Unit = {
+  private def logAsync(baseCurrency : Currency, currency: Currency, delta : Double) : Unit = {
     Future{
-      if(!logFile.exists()){
-        logFile.createNewFile() // Make sure permissions are available
+      if(!loggingFile.exists()){
+        loggingFile.createNewFile() // Make sure permissions are available
       }
-      val writer = new PrintWriter(new FileWriter(logFile,true))
+      val writer = new PrintWriter(new FileWriter(loggingFile,true))
       writer.append(s"\n${Calendar.getInstance().getTimeInMillis} $baseCurrency $currency $delta")
       writer.close()
     }.map(_=>logger.info("Successfully logged delta"))
@@ -29,4 +28,5 @@ class CriteriaExceedLogger(implicit val inj : Injector) extends Injectable{
       }
   }
 
+  override def reportAsync(baseCurrency: Currency, currency: Currency, delta: Double): Unit = logAsync(baseCurrency, currency, delta)
 }

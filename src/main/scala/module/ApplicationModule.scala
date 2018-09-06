@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorSystem}
 import akka.stream.ActorMaterializer
 import client.{HttpClient, HttpClientImpl, LiveRateClient, LiveRateClientImpl}
 import com.typesafe.config.{Config, ConfigFactory}
-import logger.CriteriaExceedLogger
+import logger.{CriteriaExceedReporter, CriteriaExceedReporterToFile}
 import model.Configuration
 import scaldi.Module
 import scheduler.Scheduler
@@ -36,7 +36,7 @@ class ApplicationModule extends Module{
   bind[RateFetchService] to new RateFetchServiceImpl
   bind[RateUpdateService] to new RateUpdateService
   bind[CurrencyConfigurationService] to new CurrencyConfigurationService
-  bind[CriteriaExceedLogger] to new CriteriaExceedLogger
+  bind[CriteriaExceedReporter] to new CriteriaExceedReporterToFile(inject[File] (identified by "criteriaExceedLogFile"))
   bind[List[Runnable]] identifiedBy "SchedulerRunnables" to List(inject[RateUpdateService])
   bind[Scheduler] to new Scheduler
 }

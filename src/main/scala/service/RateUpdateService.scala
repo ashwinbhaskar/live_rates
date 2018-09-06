@@ -3,7 +3,7 @@ package service
 import Alias.{Currency, Rates}
 import client.{Constants, LiveRateClient}
 import com.typesafe.config.Config
-import logger.CriteriaExceedLogger
+import logger.{CriteriaExceedReporter, CriteriaExceedReporterToFile}
 import model.Configuration
 import scaldi.{Injectable, Injector}
 
@@ -21,7 +21,7 @@ class RateUpdateService(implicit val inj : Injector) extends Injectable with Run
   val configuration = inject[Configuration]
   val config = inject[Config]
   val logger = LoggerFactory.getLogger(this.getClass)
-  val criteriaLogger = inject[CriteriaExceedLogger]
+  val criteriaLogger = inject[CriteriaExceedReporter]
   implicit val ec = inject[ExecutionContext]
 
   private def updateLiveRate() : Unit = {
@@ -51,7 +51,7 @@ class RateUpdateService(implicit val inj : Injector) extends Injectable with Run
   }
 
   private def log(baseCurrency : Currency, currency : Currency, delta : Double) : Unit =
-    criteriaLogger.logAsync(baseCurrency,currency,delta)
+    criteriaLogger.reportAsync(baseCurrency,currency,delta)
 
   override def run(): Unit = updateLiveRate()
 }
