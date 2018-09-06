@@ -10,6 +10,7 @@ lazy val akkaSprayVersion = "10.1.4"
 lazy val akkaStreamVersion = "2.5.16"
 lazy val scaladiVersion = "0.5.8"
 lazy val redisClientVersion = "3.7"
+lazy val logBackVersion = "1.1.3"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
@@ -19,5 +20,6 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-stream" % akkaStreamVersion,
   "org.scaldi" %%  "scaldi" % scaladiVersion,
   "net.debasishg" %% "redisclient" % redisClientVersion,
+  "ch.qos.logback" % "logback-classic" % logBackVersion,
   "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 )

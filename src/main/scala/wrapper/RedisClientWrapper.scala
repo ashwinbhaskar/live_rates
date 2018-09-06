@@ -7,7 +7,6 @@ import com.typesafe.config.Config
 import scaldi.{Injectable, Injector}
 
 import scala.concurrent.{ExecutionContext, Future}
-import com.redis.serialization._
 
 class RedisClientWrapper(implicit val inj : Injector) extends Injectable{
   val config = inject[Config]
@@ -19,8 +18,7 @@ class RedisClientWrapper(implicit val inj : Injector) extends Injectable{
   def getRates(list : List[Currency]) : Future[Rates] = {
     redisClient.hmget(Constants.LIVE_RATE_KEY,list:_*) match {
       case Some(rates) =>Future{
-        val oldRates = rates.toList.map(k => (k._1,k._2.toDouble)).toMap
-        oldRates
+        rates.toList.map(k => (k._1,k._2.toDouble)).toMap
       }
       case None => Future{Map[String, Double]()}
     }
