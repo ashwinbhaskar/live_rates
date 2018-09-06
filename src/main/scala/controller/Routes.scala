@@ -21,17 +21,25 @@ class Routes(implicit val injector: Injector) extends Injectable {
 
   def routes = path("rates") {
     get {
-      parameters('currencies ? "") { (currencies) =>
+      val sanitizedCurrencies = configuration.currencies.map(_.toUpperCase)
+      val liveRates: Future[RatesResponse] = rateFetchService.fetchRates(currencies = sanitizedCurrencies)
+      onComplete(liveRates) {
+        case Success(liveRates: RatesResponse) => complete(liveRates)
+        case Failure(error: ServiceError) => complete(error.errorCode, HttpEntity(`application/json`, error.toJsonString))
+      }
 
-        val sanitizedCurrencies = if(currencies.isEmpty) configuration.currencies else currencies.split(",").map(_.toUpperCase).toList
+
+    }
+  } ~
+    path("rates" / Segment) {
+      commaSeparatedCurrencies => {
+        val sanitizedCurrencies = commaSeparatedCurrencies.split(",").map(_.toUpperCase).toList
         val liveRates: Future[RatesResponse] = rateFetchService.fetchRates(currencies = sanitizedCurrencies)
         onComplete(liveRates) {
-          case  Success(liveRates : RatesResponse) => complete(liveRates)
-          case  Failure(error : ServiceError) =>  complete(error.errorCode, HttpEntity(`application/json`, error.toJsonString))
+          case Success(liveRates: RatesResponse) => complete(liveRates)
+          case Failure(error: ServiceError) => complete(error.errorCode, HttpEntity(`application/json`, error.toJsonString))
         }
-
       }
     }
-  }
 
 }

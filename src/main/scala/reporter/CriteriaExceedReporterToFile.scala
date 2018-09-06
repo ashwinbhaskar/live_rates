@@ -1,4 +1,4 @@
-package logger
+package reporter
 
 import java.io.{File, FileWriter, PrintWriter}
 import java.util.Calendar

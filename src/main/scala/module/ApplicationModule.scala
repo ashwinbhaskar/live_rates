@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorSystem}
 import akka.stream.ActorMaterializer
 import client.{HttpClient, HttpClientImpl, LiveRateClient, LiveRateClientImpl}
 import com.typesafe.config.{Config, ConfigFactory}
-import logger.{CriteriaExceedReporter, CriteriaExceedReporterToFile}
+import reporter.{CriteriaExceedReporter, CriteriaExceedReporterToFile}
 import model.Configuration
 import scaldi.Module
 import scheduler.Scheduler

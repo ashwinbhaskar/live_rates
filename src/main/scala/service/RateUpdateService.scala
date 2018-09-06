@@ -3,7 +3,7 @@ package service
 import Alias.{Currency, Rates}
 import client.{Constants, LiveRateClient}
 import com.typesafe.config.Config
-import logger.{CriteriaExceedReporter, CriteriaExceedReporterToFile}
+import reporter.{CriteriaExceedReporter, CriteriaExceedReporterToFile}
 import model.Configuration
 import scaldi.{Injectable, Injector}
 
