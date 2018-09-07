@@ -20,13 +20,14 @@ class RateFetchServiceImpl(implicit val injector : Injector) extends RateFetchSe
 
   override def fetchRates(currencies: List[Currency]): Future[RatesResponse] = {
     validate(currencies).flatMap(_ =>rediClientWrapper.getRates(currencies)
-      .map(rates => if(rates.isEmpty) {
-        throw new NoRatesInSystem(412, "There are no rates available in the System")
+      .flatMap(rates => if(rates.isEmpty) {
+        throw new NoRatesInSystem()
       }
     else {
-      RatesResponse(timeStamp = Calendar.getInstance().getTimeInMillis
-        , baseCurrency = baseCurrency
-        , rates = rates)
+      rediClientWrapper.getLastUpdatedTimeStamp.map(timestamp =>
+        RatesResponse(timeStamp = timestamp
+          , baseCurrency = baseCurrency
+          , rates = rates))
     }
     ))
   }

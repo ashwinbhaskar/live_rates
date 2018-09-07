@@ -1,5 +1,7 @@
 package service
 
+import java.util.Calendar
+
 import Alias.{Currency, Rates}
 import client.{Constants, LiveRateClient}
 import com.typesafe.config.Config
@@ -45,7 +47,7 @@ class RateUpdateService(implicit val inj : Injector) extends Injectable with Run
       case(Failure(e : Throwable)) => logger.error("Error updating rates",e)
     }
 
-    redisClientWrapper.setRates(newRates).foreach(isSet =>
+    redisClientWrapper.setRates(newRates, Calendar.getInstance().getTimeInMillis).foreach(isSet =>
       logger.debug(s"new HashMap ${newRates.toString} is set into Redis = $isSet"))
 
   }
